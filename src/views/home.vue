@@ -64,11 +64,11 @@ const roleAlias = {user: "我", assistant: "QGPT", system: "System"};
 const messageList = ref<ChatMessage[]>([
   {
     role: "system",
-    content: "你是 ChatGPT，OpenAI 训练的大型语言模型，尽可能简洁地回答。",
+    content: "你是QGPT，OpenAI训练的大型语言模型，尽可能简洁地回答。",
   },
   {
     role: "assistant",
-    content: "你好，我是QGPT，你可以问我一些问题。",
+    content: "我是QGPT，一个由OpenAI训练的大型语言模型，能够回答各种问题和提供信息。有什么可以帮助你的吗？",
   },
 ]);
 
