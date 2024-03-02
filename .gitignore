@@ -7,3 +7,4 @@ electron-dist
 yarn.lock
 yarn-error.log
 pnpm-lock.yaml
+/.idea
