@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import type {ChatMessage} from "@/types";
 import {ref, watch, nextTick, onMounted} from "vue";
-import {chat} from "@/libs/gpt";
+import {chat, get_version} from "@/libs/gpt";
 import cryptoJS from "crypto-js";
 import Loding from "@/components/Loding.vue";
 import Copy from "@/components/Copy.vue";
@@ -73,7 +73,6 @@ const messageList = ref<ChatMessage[]>([
 ]);
 
 onMounted(() => {
-
 });
 
 const sendChatMessage = async (content: string = messageContent.value) => {
@@ -86,7 +85,21 @@ const sendChatMessage = async (content: string = messageContent.value) => {
     clearMessageContent();
     messageList.value.push({role: "assistant", content: ""});
 
-    const {body, status} = await chat(messageList.value, getAPIKey());
+    const {body, status} = await chat(messageList.value);
+    if (body) {
+      const reader = body.getReader();
+      await readChatResp(reader, status);
+    }
+  } catch (error: any) {
+    appendLastMessageContent(error);
+  } finally {
+    isTalking.value = false;
+  }
+};
+
+const getVersion = async () => {
+  try {
+    const {body, status} = await get_version();
     if (body) {
       const reader = body.getReader();
       await readStream(reader, status);
@@ -96,6 +109,29 @@ const sendChatMessage = async (content: string = messageContent.value) => {
   } finally {
     isTalking.value = false;
   }
+};
+
+
+const readChatResp = async (
+    reader: ReadableStreamDefaultReader<Uint8Array>,
+    status: number
+) => {
+  let respContent = "";
+  let streamDone = false
+
+  while (!streamDone) {
+    const {value, done} = await reader.read();
+    streamDone = done
+    if(value !== undefined)
+    {
+      const decodedText = decoder.decode(value, {stream: true});
+      respContent += decodedText
+    }
+  }
+
+  let jsonResp = JSON.parse(respContent)
+  let realResp = jsonResp.choices[0].message.content
+  appendLastMessageContent(realResp)
 };
 
 const readStream = async (

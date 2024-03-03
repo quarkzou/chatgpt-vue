@@ -1,22 +1,30 @@
-import type { ChatMessage } from "@/types";
+import type {ChatMessage} from "@/types";
 
-export async function chat(messageList: ChatMessage[], apiKey: string) {
+export async function chat(messageList: ChatMessage[]) {
   try {
-    const result = await fetch("https://api.openai.com/v1/chat/completions", {
+    return await fetch("api/chat", {
       method: "post",
       // signal: AbortSignal.timeout(8000),
       // 开启后到达设定时间会中断流式输出
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
-        stream: true,
+        // stream: true,
         messages: messageList,
       }),
     });
-    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function get_version() {
+  try {
+    return await fetch("/api/version", {
+      method: "get",
+    });
   } catch (error) {
     throw error;
   }
