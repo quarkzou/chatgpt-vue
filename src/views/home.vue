@@ -122,16 +122,21 @@ const readChatResp = async (
   while (!streamDone) {
     const {value, done} = await reader.read();
     streamDone = done
-    if(value !== undefined)
-    {
+    if (value !== undefined) {
       const decodedText = decoder.decode(value, {stream: true});
       respContent += decodedText
     }
   }
 
-  let jsonResp = JSON.parse(respContent)
-  let realResp = jsonResp.choices[0].message.content
-  appendLastMessageContent(realResp)
+  if (status !== 200) {
+    const errMsg = `请求出错了：${respContent}`
+    appendLastMessageContent(errMsg)
+  } else {
+    let jsonResp = JSON.parse(respContent)
+    let realResp = jsonResp.choices[0].message.content
+    appendLastMessageContent(realResp)
+  }
+
 };
 
 const readStream = async (
