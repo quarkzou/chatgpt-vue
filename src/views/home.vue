@@ -7,6 +7,13 @@
       <div class="ml-4 text-sm text-gray-500">
         Based on OpenAI
       </div>
+      <div
+          class="ml-auto px-3 py-2 text-sm cursor-pointer hover:bg-white rounded-md"
+          @click="resetChat()"
+      >
+        清空
+      </div>
+
     </div>
 
     <div class="flex-1 mx-2 mt-20 mb-2" ref="chatListDom">
@@ -110,6 +117,15 @@ const getVersion = async () => {
     isTalking.value = false;
   }
 };
+
+const resetChat = async () => {
+  try {
+    messageList.value.splice(1)
+
+  } catch (error: any) {
+  } finally {
+  }
+}
 
 
 const readChatResp = async (
