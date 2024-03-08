@@ -37,13 +37,13 @@
     </div>
 
     <div class="sticky bottom-0 w-full p-6 pb-8 bg-gray-100">
-      <div class="flex">
-        <input
+      <div class="flex vcenter">
+        <textarea
+            ref="question_input"
             class="input"
-            type="text"
             placeholder="请输入您的问题..."
             v-model="messageContent"
-            @keydown.enter="isTalking || sendOrSave()"
+            @input="adjustHeight"
         />
         <button class="btn" :disabled="isTalking" @click="sendOrSave()">
           发送
@@ -52,6 +52,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import type {ChatMessage} from "@/types";
@@ -66,6 +67,7 @@ let apiKey = "";
 let isTalking = ref(false);
 let messageContent = ref("");
 const chatListDom = ref<HTMLDivElement>();
+const question_input = ref<HTMLDivElement>();
 const decoder = new TextDecoder("utf-8");
 const roleAlias = {user: "我", assistant: "QGPT", system: "System"};
 const messageList = ref<ChatMessage[]>([
@@ -232,6 +234,13 @@ const scrollToBottom = () => {
   scrollTo(0, chatListDom.value.scrollHeight);
 };
 
+const adjustHeight = () => {
+  console.log(question_input.value.scrollHeight)
+  question_input.value.style.height = '40px';
+  question_input.value.style.height = Math.max(question_input.value.scrollHeight, 40) + 'px';
+};
+
+
 watch(messageList.value, () => nextTick(() => scrollToBottom()));
 </script>
 
@@ -243,4 +252,17 @@ pre {
   "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
   SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
 }
+
+textarea.input {
+  /* Other styles */
+  resize: none;
+  overflow: hidden;
+  min-height: 40px;
+  height: 40px;
+}
+
+.vcenter {
+  align-items: center;
+}
+
 </style>
