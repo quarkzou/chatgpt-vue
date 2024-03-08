@@ -235,6 +235,7 @@ const scrollToBottom = () => {
 };
 
 const adjustHeight = () => {
+  if (!question_input.value) return;
   console.log(question_input.value.scrollHeight)
   question_input.value.style.height = '40px';
   question_input.value.style.height = Math.max(question_input.value.scrollHeight, 40) + 'px';
