@@ -24,7 +24,7 @@ export async function chat(messageList: ChatMessage[]) {
                 "sign": sign,
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
+                model: "gpt-4o",
                 // stream: true,
                 messages: messageList,
             }),
