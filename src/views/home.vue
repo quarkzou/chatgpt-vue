@@ -44,7 +44,6 @@
             placeholder="请输入您的问题..."
             v-model="messageContent"
             @input="adjustHeight"
-            @keyup.enter="sendOrSave"
         />
         <button class="btn" :disabled="isTalking" @click="sendOrSave()">
           发送
