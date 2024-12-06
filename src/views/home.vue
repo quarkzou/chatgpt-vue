@@ -8,7 +8,7 @@
         Based on OpenAI
       </div>
 
-      <Model @update:selectedModel="handleModelChange"></Model>
+      <Model @update:selectedModel="handleModelChange" class="ml-8"></Model>
 
       <div
           class="ml-auto px-3 py-2 text-sm cursor-pointer hover:bg-white rounded-md"
