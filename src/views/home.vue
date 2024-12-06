@@ -7,6 +7,9 @@
       <div class="ml-4 text-sm text-gray-500">
         Based on OpenAI
       </div>
+
+      <Model @update:selectedModel="handleModelChange"></Model>
+
       <div
           class="ml-auto px-3 py-2 text-sm cursor-pointer hover:bg-white rounded-md"
           @click="resetChat()"
@@ -31,7 +34,7 @@
               v-if="item.content"
               v-html="md.render(item.content)"
           ></div>
-          <Loding v-else/>
+          <Loading v-else/>
         </div>
       </div>
     </div>
@@ -60,9 +63,16 @@ import type {ChatMessage} from "@/types";
 import {ref, watch, nextTick, onMounted} from "vue";
 import {chat, get_version} from "@/libs/gpt";
 import cryptoJS from "crypto-js";
-import Loding from "@/components/Loding.vue";
+import Loading from "@/components/Loading.vue";
 import Copy from "@/components/Copy.vue";
+import Model from "@/components/Model.vue";
 import {md} from "@/libs/markdown";
+
+const selectedModel = ref('gpt-4o');
+
+const handleModelChange = (model: string) => {
+  selectedModel.value = model;
+}
 
 let apiKey = "";
 let isTalking = ref(false);
@@ -95,7 +105,7 @@ const sendChatMessage = async (content: string = messageContent.value) => {
     clearMessageContent();
     messageList.value.push({role: "assistant", content: ""});
 
-    const {body, status} = await chat(messageList.value);
+    const {body, status} = await chat(messageList.value, selectedModel.value);
     if (body) {
       const reader = body.getReader();
       await readChatResp(reader, status);

@@ -7,7 +7,7 @@ function compute_sign(ts: string, uuid: string, token: string) {
     return CryptoJS.SHA1(concat).toString(CryptoJS.enc.Hex)
 }
 
-export async function chat(messageList: ChatMessage[]) {
+export async function chat(messageList: ChatMessage[], model: string) {
     try {
         const ts = new Date().getTime().toString();
         const nonce = uuidv4();
@@ -24,7 +24,7 @@ export async function chat(messageList: ChatMessage[]) {
                 "sign": sign,
             },
             body: JSON.stringify({
-                model: "gpt-4o",
+                model: model,
                 // stream: true,
                 messages: messageList,
             }),
