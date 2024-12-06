@@ -82,10 +82,6 @@ const decoder = new TextDecoder("utf-8");
 const roleAlias = {user: "我", assistant: "QGPT", system: "System"};
 const messageList = ref<ChatMessage[]>([
   {
-    role: "system",
-    content: "你是QGPT，OpenAI训练的大型语言模型，尽可能简洁地回答。",
-  },
-  {
     role: "assistant",
     content: "我是QGPT，一个由OpenAI训练的大型语言模型，能够回答各种问题和提供信息。有什么可以帮助你的吗？",
   },
