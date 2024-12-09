@@ -4,9 +4,6 @@
         class="flex flex-nowrap fixed w-full items-baseline top-0 px-6 py-4 bg-gray-100"
     >
       <div class="text-2xl font-bold">QGPT</div>
-      <div class="ml-4 text-sm text-gray-500">
-        Based on OpenAI
-      </div>
 
       <Model @update:selectedModel="handleModelChange" class="ml-8"></Model>
 
