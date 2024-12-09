@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import type {ChatMessage} from "@/types";
 import {ref, watch, nextTick, onMounted} from "vue";
-import {chat, get_version} from "@/libs/gpt";
+import {chat, get_version, check_key} from "@/libs/gpt";
 import cryptoJS from "crypto-js";
 import Loading from "@/components/Loading.vue";
 import Copy from "@/components/Copy.vue";
@@ -72,6 +72,7 @@ const handleModelChange = (model: string) => {
 
 let apiKey = "";
 let isTalking = ref(false);
+let isLogin = ref(false);
 let messageContent = ref("");
 const chatListDom = ref<HTMLDivElement>();
 const question_input = ref<HTMLDivElement>();
@@ -203,9 +204,46 @@ const readStream = async (
 const appendLastMessageContent = (content: string) =>
     (messageList.value[messageList.value.length - 1].content += content);
 
+const checkKey = async (key: string) => {
+  try {
+    const {body, status} = await check_key(key);
+    if (body) {
+      const reader = body.getReader();
+      const {value, done} = await reader.read();
+      const decodedText = decoder.decode(value, {stream: true});
+      let jsonResp = JSON.parse(decodedText)
+      console.log(jsonResp.login == 1);
+      return jsonResp.login == 1;
+    }
+  } catch (error) {
+    return false;
+  }
+}
+
+const doLogin = async () => {
+  let key = messageContent.value.trim();
+  messageList.value.push({role: "user", content: key});
+  clearMessageContent();
+  let ret_login = await checkKey(key);
+  if (ret_login) {
+    messageList.value.push({role: "assistant", content: ""});
+    appendLastMessageContent("Login Successfully...");
+    isLogin.value = true;
+
+  } else {
+    appendLastMessageContent("Login Failed...");
+    isLogin.value = false;
+  }
+
+}
+
 const sendOrSave = () => {
+
   if (!messageContent.value.length) return;
-  sendChatMessage();
+  if (!isLogin.value) {
+    doLogin();
+  } else
+    sendChatMessage();
 };
 
 const getSecretKey = () => "quarksoft";

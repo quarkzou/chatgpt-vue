@@ -43,3 +43,17 @@ export async function get_version() {
         throw error;
     }
 }
+
+export async function check_key(key: string) {
+    try {
+        let sha_key = CryptoJS.SHA1(key).toString(CryptoJS.enc.Hex)
+        return await fetch("/api/key", {
+            method: "post",
+            body: JSON.stringify({
+                key: sha_key,
+            }),
+        });
+    } catch (error) {
+        throw error;
+    }
+}
