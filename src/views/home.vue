@@ -214,10 +214,8 @@ const checkKey = async (key: string) => {
     if (body && (status == 200)) {
       const reader = body.getReader();
       const {value, done} = await reader.read();
-      if (done) {
-        const decodedText = decoder.decode(value, {stream: true});
-        return JSON.parse(decodedText)
-      }
+      const decodedText = decoder.decode(value, {stream: true});
+      return JSON.parse(decodedText)
     }
   } catch (error) {
     return false;
