@@ -73,6 +73,7 @@ const handleModelChange = (model: string) => {
 let apiKey = "";
 let isTalking = ref(false);
 let isLogin = ref(false);
+let accessToken = ref("");
 let messageContent = ref("");
 const chatListDom = ref<HTMLDivElement>();
 const question_input = ref<HTMLDivElement>();
@@ -98,13 +99,16 @@ const sendChatMessage = async (content: string = messageContent.value) => {
     clearMessageContent();
     messageList.value.push({role: "assistant", content: ""});
 
-    const {body, status} = await chat(messageList.value, selectedModel.value);
+    const {body, status} = await chat(messageList.value, selectedModel.value, accessToken.value);
     if (body) {
+      if (status != 200)
+        isLogin.value = false;
       const reader = body.getReader();
       await readChatResp(reader, status);
     }
   } catch (error: any) {
     appendLastMessageContent(error);
+    isLogin.value = false;
   } finally {
     isTalking.value = false;
   }
@@ -207,13 +211,13 @@ const appendLastMessageContent = (content: string) =>
 const checkKey = async (key: string) => {
   try {
     const {body, status} = await check_key(key);
-    if (body) {
+    if (body && (status == 200)) {
       const reader = body.getReader();
       const {value, done} = await reader.read();
-      const decodedText = decoder.decode(value, {stream: true});
-      let jsonResp = JSON.parse(decodedText)
-      console.log(jsonResp.login == 1);
-      return jsonResp.login == 1;
+      if (done) {
+        const decodedText = decoder.decode(value, {stream: true});
+        return JSON.parse(decodedText)
+      }
     }
   } catch (error) {
     return false;
@@ -225,14 +229,18 @@ const doLogin = async () => {
   messageList.value.push({role: "user", content: key});
   clearMessageContent();
   let ret_login = await checkKey(key);
-  if (ret_login) {
+  if (ret_login.login == 1) {
     messageList.value.push({role: "assistant", content: ""});
     appendLastMessageContent("Login Successfully...");
     isLogin.value = true;
+    accessToken.value = ret_login.token;
+    await resetChat();
 
   } else {
+    messageList.value.push({role: "assistant", content: ""});
     appendLastMessageContent("Login Failed...");
     isLogin.value = false;
+    accessToken.value = "";
   }
 
 }

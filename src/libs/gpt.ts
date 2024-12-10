@@ -7,12 +7,12 @@ function compute_sign(ts: string, uuid: string, token: string) {
     return CryptoJS.SHA1(concat).toString(CryptoJS.enc.Hex)
 }
 
-export async function chat(messageList: ChatMessage[], model: string) {
+export async function chat(messageList: ChatMessage[], model: string, token: string) {
     try {
         const ts = new Date().getTime().toString();
         const nonce = uuidv4();
-        const token = 'qsdf12rtyu907816'
-        const sign = compute_sign(ts, nonce, token)
+        const magic_word = 'qsdf12rtyu907816'
+        const sign = compute_sign(ts, nonce, magic_word)
         return await fetch("api/chat", {
             method: "post",
             // signal: AbortSignal.timeout(8000),
@@ -22,6 +22,7 @@ export async function chat(messageList: ChatMessage[], model: string) {
                 "ts": ts,
                 "nonce": nonce,
                 "sign": sign,
+                "token": token,
             },
             body: JSON.stringify({
                 model: model,
