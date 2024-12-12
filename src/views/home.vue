@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-col h-screen">
     <div
-        class="flex flex-nowrap fixed w-full items-baseline top-0 px-6 py-4 bg-gray-100"
+        class="flex flex-nowrap fixed w-full items-baseline top-0 px-2 py-2 bg-gray-100"
     >
       <div class="text-2xl font-bold">QGPT</div>
 
-      <Model @update:selectedModel="handleModelChange" class="ml-8"></Model>
+      <Model @update:selectedModel="handleModelChange" class="ml-2"></Model>
 
-      <p v-if="cdMinutes.length > 0" class="ml-8">{{ cdMinutes }}:{{ cdSeconds }}</p>
+      <p v-if="cdMinutes.length > 0" class="ml-2">{{ cdMinutes }}:{{ cdSeconds }}</p>
 
       <div
           class="ml-auto px-3 py-2 text-sm cursor-pointer hover:bg-white rounded-md"
