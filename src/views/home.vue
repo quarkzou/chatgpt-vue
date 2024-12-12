@@ -43,6 +43,7 @@
             class="input"
             placeholder="请输入您的问题..."
             v-model="messageContent"
+            @keydown.ctrl.enter="!isTalking && sendOrSave()"
             @input="adjustHeight"
         />
         <button class="btn" :disabled="isTalking" @click="sendOrSave()">
