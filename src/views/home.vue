@@ -7,6 +7,8 @@
 
       <Model @update:selectedModel="handleModelChange" class="ml-8"></Model>
 
+      <p v-if="cdMinutes.length > 0" class="ml-8">{{ cdMinutes }}:{{ cdSeconds }}</p>
+
       <div
           class="ml-auto px-3 py-2 text-sm cursor-pointer hover:bg-white rounded-md"
           @click="resetChat()"
@@ -87,8 +89,51 @@ const messageList = ref<ChatMessage[]>([
   },
 ]);
 
+let intervalId: any = null;
+let expireDate = "";
+let cdMinutes = ref('');
+let cdSeconds = ref('');
+
 onMounted(() => {
+  startCountdown();
 });
+
+const startCountdown = () => {
+  if (!intervalId) {
+    intervalId = setInterval(() => {
+      if (expireDate.length > 0) {
+        if (!calculateTimeDifference(expireDate)) {
+          clearInterval(intervalId);
+          intervalId = null;
+          expireDate = "";
+          cdMinutes.value = '';
+          cdSeconds.value = '';
+          alert("Time's up!");
+        }
+      }
+    }, 1000);
+  }
+}
+
+const calculateTimeDifference = (dateString: string): boolean => {
+  // 将日期字符串解析为 Date 对象
+  const targetDate = new Date(dateString.replace(" ", "T"));
+  const currentDate = new Date();
+
+  // 计算两者之间的时间差，单位为毫秒
+  const timeDifference = Math.abs(targetDate.getTime() - currentDate.getTime());
+
+  // 转换为秒
+  const totalSeconds = Math.floor(timeDifference / 1000);
+
+  // 计算分钟和秒
+  let imin: number = Math.floor(totalSeconds / 60);
+  let isec: number = totalSeconds % 60;
+  cdMinutes.value = String(imin).padStart(2, '0');
+  cdSeconds.value = String(isec).padStart(2, '0');
+
+  return timeDifference > 0
+}
 
 const sendChatMessage = async (content: string = messageContent.value) => {
   try {
@@ -232,6 +277,7 @@ const doLogin = async () => {
     messageList.value.push({role: "assistant", content: ""});
     appendLastMessageContent("Login Successfully...");
     isLogin.value = true;
+    expireDate = ret_login.expire;
     accessToken.value = ret_login.token;
     await resetChat();
 
