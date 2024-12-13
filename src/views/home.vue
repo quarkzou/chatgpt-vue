@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col h-screen">
     <div
-        class="flex flex-nowrap fixed w-full items-baseline top-0 px-2 py-2 bg-gray-100"
+        class="flex flex-nowrap fixed w-full items-baseline top-0 px-2 py-4 bg-gray-100"
     >
-      <div class="text-2xl font-bold">QGPT</div>
+      <div class="text-2xl font-bold responsive-div">QGPT</div>
 
       <Model @update:selectedModel="handleModelChange" class="ml-2"></Model>
 
@@ -98,21 +98,23 @@ onMounted(() => {
   startCountdown();
 });
 
+const clearLoginStatus = () => {
+  isLogin.value = false;
+  accessToken.value = "";
+  expireDate = "";
+  cdMinutes.value = '';
+  cdSeconds.value = '';
+}
+
 const startCountdown = () => {
-  if (!intervalId) {
     intervalId = setInterval(() => {
       if (expireDate.length > 0) {
         if (!calculateTimeDifference(expireDate)) {
-          clearInterval(intervalId);
-          intervalId = null;
-          expireDate = "";
-          cdMinutes.value = '';
-          cdSeconds.value = '';
-          alert("Time's up!");
+          clearLoginStatus();
+          alert("Login Expired!");
         }
       }
     }, 1000);
-  }
 }
 
 const calculateTimeDifference = (dateString: string): boolean => {
@@ -121,16 +123,14 @@ const calculateTimeDifference = (dateString: string): boolean => {
   const currentDate = new Date();
 
   // 计算两者之间的时间差，单位为毫秒
-  const timeDifference = Math.abs(targetDate.getTime() - currentDate.getTime());
+  const timeDifference = targetDate.getTime() - currentDate.getTime();
 
   // 转换为秒
   const totalSeconds = Math.floor(timeDifference / 1000);
 
   // 计算分钟和秒
-  let imin: number = Math.floor(totalSeconds / 60);
-  let isec: number = totalSeconds % 60;
-  cdMinutes.value = String(imin).padStart(2, '0');
-  cdSeconds.value = String(isec).padStart(2, '0');
+  cdMinutes.value = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+  cdSeconds.value = String(totalSeconds % 60).padStart(2, '0');
 
   return timeDifference > 0
 }
@@ -148,13 +148,13 @@ const sendChatMessage = async (content: string = messageContent.value) => {
     const {body, status} = await chat(messageList.value, selectedModel.value, accessToken.value);
     if (body) {
       if (status != 200)
-        isLogin.value = false;
+        clearLoginStatus();
       const reader = body.getReader();
       await readChatResp(reader, status);
     }
   } catch (error: any) {
     appendLastMessageContent(error);
-    isLogin.value = false;
+    clearLoginStatus();
   } finally {
     isTalking.value = false;
   }
@@ -284,8 +284,7 @@ const doLogin = async () => {
   } else {
     messageList.value.push({role: "assistant", content: ""});
     appendLastMessageContent("Login Failed...");
-    isLogin.value = false;
-    accessToken.value = "";
+    clearLoginStatus();
   }
 
 }
@@ -358,6 +357,12 @@ textarea.input {
 
 .vcenter {
   align-items: center;
+}
+
+@media (max-width: 600px) {
+  .responsive-div {
+    display: none; /* 在宽度小于600px时隐藏 */
+  }
 }
 
 </style>
