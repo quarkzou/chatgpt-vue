@@ -6,7 +6,7 @@ const emit = defineEmits<{
 }>();
 
 const selected_model = ref('gpt-4o')
-const model_list = ['gpt-4o', 'o1-mini']
+const model_list = ['gpt-4o', 'o1-preview']
 const onRadioChange = (model: string) => {
   selected_model.value = model
   emit('update:selectedModel', model);
