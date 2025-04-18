@@ -5,12 +5,12 @@ const emit = defineEmits<{
   (e: 'update:selectedModel', model: string): void;
 }>();
 
-const selected_model = ref('gpt-4o')
+const selected_model = ref('gpt-4.1')
 // 修改 model_list 为 key/value 形式（key 为模型，value 为模型代称）
 const model_list = {
-  'gpt-4o': '4o',
-  'o1-preview': 'o1p',
-  'gpt-4.5-preview': '4.5p'
+  'gpt-4.1': '4.1',
+  'gpt-4.1-mini': '4.1m',
+  'o1-preview': 'o1p'
 }
 const onRadioChange = (model: string) => {
   selected_model.value = model

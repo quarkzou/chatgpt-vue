@@ -67,7 +67,7 @@ import Copy from "@/components/Copy.vue";
 import Model from "@/components/Model.vue";
 import {md} from "@/libs/markdown";
 
-const selectedModel = ref('gpt-4o');
+const selectedModel = ref('gpt-4.1');
 
 const handleModelChange = (model: string) => {
   selectedModel.value = model;
